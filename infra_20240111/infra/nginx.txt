@@ -1,0 +1,32 @@
+server {
+    listen 80;
+    server_name group6-nodejs.devops4all.co;
+    return 301 https://$host$request_uri;
+	#comment....
+}
+
+
+server {
+    listen 443 ssl;
+    
+    server_name group6-nodejs.devops4all.co;
+    ssl_certificate "/opt/ssl/file.pem";
+    ssl_certificate_key "/opt/ssl/acfc2022.key";
+    ssl_session_cache shared:SSL:1m;
+    ssl_session_timeout  10m;
+    ssl_ciphers HIGH:!aNULL:!MD5;
+
+    # To allow special characters in headers
+    ignore_invalid_headers off;
+    # Allow any size file to be uploaded.
+    # Set to a value such as 1000m; to restrict file size to a specific value
+    client_max_body_size 0;
+    # To disable buffering
+    proxy_buffering off;
+
+    # Proxy requests to the bucket "photos" to MinIO server running on port 9000
+    # Proxy any other request to the application server running on port 9001
+    location / {
+        [proxy config]
+    }    
+ }
