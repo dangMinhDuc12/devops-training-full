@@ -79,7 +79,7 @@ sudo apt-mark hold kubelet kubeadm kubectl
 kubeadm init --control-plane-endpoint={{apiserver.lb}}:6443 --upload-certs --pod-network-cidr=10.0.1.0/24
 ```
 
-## Install cni
+## Install cni on master node
 
 ```sh
 curl https://baltocdn.com/helm/signing.asc | gpg --dearmor | sudo tee /usr/share/keyrings/helm.gpg > /dev/null
@@ -113,7 +113,9 @@ kubeadm token list
 ## Create token
 
 ```sh
-kubeadm token create
+kubeadm token create 
+kubeadm token create --print-join-command
+
 ```
 
 ## Discovery token ca cert hash
