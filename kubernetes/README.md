@@ -113,7 +113,7 @@ kubeadm token list
 ## Create token
 
 ```sh
-kubeadm token create 
+kubeadm token create
 kubeadm token create --print-join-command
 
 ```
@@ -129,4 +129,10 @@ openssl dgst -sha256 -hex | sed 's/^.* //'
 
 ```sh
 kubeadm init phase upload-certs --upload-certs
+```
+
+## Label node
+
+```
+kubectl label nodes node1-cpu node2-cpu group=group_cpu
 ```
