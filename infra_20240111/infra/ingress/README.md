@@ -142,9 +142,10 @@ name: app-aicycle
 
 annotations:
 cert-manager.io/cluster-issuer: "letsencrypt-prod"  
- nginx.ingress.kubernetes.io/rewrite-target: /
+nginx.ingress.kubernetes.io/rewrite-target: /$2
 kubernetes.io/ingress.class: nginx
 nginx.ingress.kubernetes.io/proxy-body-size: 16m
+#nginx.ingress.kubernetes.io/backend-protocol: "HTTP" #Only for testing
 spec:
 tls:
 
@@ -193,21 +194,22 @@ tls:
     number: 6302
 - host: stage.api.aicycle.ai
   http:
-  paths: - path: /admin(/|$)(.*)
-        pathType: Prefix
-        backend:
-          service:
-            name: be-admin-server-service
-            port:
-              number: 6303
-      - path: /insurance(/|$)(.\*)
-  pathType: Prefix
-  backend:
-  service:
-  name: insurance-collection-app-be-service
-  port:
-  number: 6302
-  Trong đó cần quan tâm đến các tham số sau:
+  paths: 
+  - path: /admin(/|$)(.*)
+    pathType: Prefix
+      backend:
+        service:
+          name: be-admin-server-service
+          port:
+            number: 6303
+  - path: /insurance(/|$)(.\*)
+    pathType: Prefix
+       backend:
+        service:
+          name: insurance-collection-app-be-service
+          port:
+            number: 6302
+    Trong đó cần quan tâm đến các tham số sau:
 
 hosts: là sub-domain cần plic
 
@@ -216,3 +218,8 @@ name: là name service
 number: là port của name service
 
 Khi muốn thêm 1 service expose ra ngoài thì cần thêm ở file ingress.yaml này sau đó thực hiện lệnh: kubectl apply -f ingress.yaml
+
+
+Lệnh cài nginx-ingress
+helm install aicycle-nginx ingress-nginx/ingress-nginx --set controller.metrics.enabled=true --set-string controller.metrics.service.annotations."prometheus\.io/port"="10254" --set-string controller.metrics.service.annotations."prometheus\.io/scrape"="true" --set controller.extraArgs.default-ssl-certificate=default/letsencrypt-secret-prod --namespace kube-system
+
