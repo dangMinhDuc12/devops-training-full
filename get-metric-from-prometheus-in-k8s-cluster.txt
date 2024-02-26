@@ -1,0 +1,34 @@
+To collect custom metrics from your Kubernetes pods using Prometheus, follow these steps:
+
+Pod Annotations:
+In your pod deployment configuration, add the following annotations to the metadata section:
+metadata:
+  annotations:
+    prometheus.io/scrape: 'true'
+    prometheus.io/path: '/data/metrics'
+    prometheus.io/port: '80'
+
+These annotations indicate that Prometheus should scrape metrics from the specified path (/data/metrics) on port 80 for each pod.
+Prometheus Configuration:
+Look at the kubernetes-pods job in your Prometheus configuration (usually defined in a ConfigMap).
+The relabel_configs section of this job reads information from pod annotations:
+- source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
+  action: keep
+  regex: true
+- source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_path]
+  action: replace
+  target_label: __metrics_path__
+  regex: (.+)
+- source_labels: [__address__, __meta_kubernetes_pod_annotation_prometheus_io_port]
+  action: replace
+  regex: ([^:]+)(?::\\d+)?;(\\d+)
+  replacement: $1:$2
+  target_label: __address__
+
+Here, __metrics_path__ and the port are read from pod annotations.
+Verify:
+Ensure that your pods expose the custom metrics at the specified endpoint (:80/data/metrics).
+If you’re using Prometheus Operator, note that this approach may not work; it uses PodMonitors instead.
+Remember that these annotations enable Prometheus to pull data from the custom /data/metrics route in each available pod. Adjust the annotations and paths as needed based on your specific setup1.
+
+Link refer: https://stackoverflow.com/questions/53365191/monitor-custom-kubernetes-pod-metrics-using-prometheus
