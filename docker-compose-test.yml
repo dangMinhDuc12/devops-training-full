@@ -1,0 +1,22 @@
+version: '3'
+services:
+  aicycle-website-dev:
+    container_name: aicycle-website-dev
+    image: '198927737561.dkr.ecr.ap-southeast-1.amazonaws.com/aicycle-website:dev'
+    restart: always
+    ports:
+      - '3001:3000'
+  aicycle-website:
+    container_name: aicycle-website
+    image: '198927737561.dkr.ecr.ap-southeast-1.amazonaws.com/aicycle-website:main'
+    restart: always
+    network_mode: host
+  watchtower:
+    container_name: watchtower
+    image: rabaco/watchtower-ecr:latest
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /home/ubuntu/.docker/config.json:/config.json
+    #them env key aws vao day
+    restart: always
+    command: --interval 30 --cleanup aicycle-website-dev aicycle-website
